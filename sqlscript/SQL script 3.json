@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 3",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\nSELECT\n TOP 100 *\nFROM\nOPENROWSET(\nBULK 'https://heinocloudstorage.dfs.core.windows.net/rawdata/PO_2021_02.csv',\nFORMAT = 'CSV',\nparser_version = '2.0',\n        firstrow = 1\n) with (\n        gi_dte date,\n        Division varchar(4)\n    ) as rows",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

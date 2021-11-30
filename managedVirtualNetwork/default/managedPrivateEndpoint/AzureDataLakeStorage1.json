@@ -1,0 +1,10 @@
+{
+	"name": "AzureDataLakeStorage1",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.Storage/storageAccounts/heinocloudstorage",
+		"groupId": "dfs",
+		"fqdns": [
+			"heinocloudstorage.dfs.core.windows.net"
+		]
+	}
+}

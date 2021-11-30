@@ -1,0 +1,17 @@
+{
+	"name": "Create View",
+	"properties": {
+		"content": {
+			"query": "CREATE VIEW SalesTransactions\n\nAS SELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.blob.core.windows.net/curated/',\n        FORMAT='PARQUET'\n    ) AS [result]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SapData",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

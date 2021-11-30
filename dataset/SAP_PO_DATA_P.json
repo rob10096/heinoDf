@@ -1,0 +1,71 @@
+{
+	"name": "SAP_PO_DATA_P",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "curated"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "agid",
+				"type": "DATE"
+			},
+			{
+				"name": "DocCategory",
+				"type": "UTF8"
+			},
+			{
+				"name": "0MATERIAL",
+				"type": "UTF8"
+			},
+			{
+				"name": "MaterialText",
+				"type": "UTF8"
+			},
+			{
+				"name": "DC",
+				"type": "UTF8"
+			},
+			{
+				"name": "0DIVISION",
+				"type": "UTF8"
+			},
+			{
+				"name": "SalesOrg",
+				"type": "UTF8"
+			},
+			{
+				"name": "Company",
+				"type": "UTF8"
+			},
+			{
+				"name": "SalesOffice",
+				"type": "UTF8"
+			},
+			{
+				"name": "CalDay",
+				"type": "DATE"
+			},
+			{
+				"name": "UOM",
+				"type": "UTF8"
+			},
+			{
+				"name": "QTY",
+				"type": "DECIMAL",
+				"precision": 10,
+				"scale": 2
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

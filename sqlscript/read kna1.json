@@ -1,0 +1,17 @@
+{
+	"name": "read kna1",
+	"properties": {
+		"content": {
+			"query": "SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.dfs.core.windows.net/sapdata1001/2020_kna1.csv',\n    format = 'csv',\n    parser_version = '2.0',\n    firstrow = 2 ) as rows",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

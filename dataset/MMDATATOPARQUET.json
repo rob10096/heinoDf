@@ -1,0 +1,85 @@
+{
+	"name": "MMDATATOPARQUET",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "curated"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "MANDT",
+				"type": "INT_16"
+			},
+			{
+				"name": "KEYF0",
+				"type": "UTF8"
+			},
+			{
+				"name": "ERDAT",
+				"type": "DATE"
+			},
+			{
+				"name": "MATNR",
+				"type": "UTF8"
+			},
+			{
+				"name": "VTWEG",
+				"type": "UTF8"
+			},
+			{
+				"name": "BUKRS",
+				"type": "UTF8"
+			},
+			{
+				"name": "FKIMG",
+				"type": "UTF8"
+			},
+			{
+				"name": "VRKME",
+				"type": "UTF8"
+			},
+			{
+				"name": "UMVKZ",
+				"type": "UTF8"
+			},
+			{
+				"name": "MEINS",
+				"type": "UTF8"
+			},
+			{
+				"name": "ARKTX",
+				"type": "UTF8"
+			},
+			{
+				"name": "PRODH",
+				"type": "UTF8"
+			},
+			{
+				"name": "MATKL",
+				"type": "INT32"
+			},
+			{
+				"name": "SPART",
+				"type": "UTF8"
+			},
+			{
+				"name": "WERKS",
+				"type": "UTF8"
+			},
+			{
+				"name": "EAN11",
+				"type": "INT64"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

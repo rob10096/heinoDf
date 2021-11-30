@@ -1,0 +1,39 @@
+{
+	"name": "DF_to_MSSQL",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "PO_2021_02",
+						"type": "DatasetReference"
+					},
+					"name": "CloudDataStore"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "AzureSQLServer"
+				},
+				{
+					"dataset": {
+						"referenceName": "PO_2021_01",
+						"type": "DatasetReference"
+					},
+					"name": "toParquet"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Mapping"
+				}
+			],
+			"script": "source(output(\n\t\t{Actual goods issue date} as date 'MM/dd/yyyy',\n\t\t{Sales Document Category} as string,\n\t\t{0MATERIAL} as string,\n\t\tMaterialText as string,\n\t\t{Distribution Channel} as string,\n\t\t{0DIVISION} as string,\n\t\t{Sales Organization} as string,\n\t\t{Company code} as string,\n\t\t{Sales Office} as string,\n\t\t{Calendar day} as date 'MM/dd/yyyy',\n\t\t{Base Unit of Measure} as string,\n\t\t{Billing Quantity in Base Unit} as decimal(10,0) '0000,0000'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['PO_2021_*.csv']) ~> CloudDataStore\nCloudDataStore derive({Actual goods issue date} = toDate(byName('Actual goods issue date'), 'yyyy/MM/dd'),\n\t\t{Sales Document Category} = {Sales Document Category},\n\t\t{0MATERIAL} = {0MATERIAL},\n\t\tMaterialText = MaterialText,\n\t\t{Distribution Channel} = {Distribution Channel},\n\t\t{0DIVISION} = {0DIVISION},\n\t\t{Sales Organization} = {Sales Organization},\n\t\t{Company code} = {Company code},\n\t\t{Sales Office} = {Sales Office},\n\t\t{Calendar day} = toDate(byName('Calendar day'), 'yyyy/MM/dd'),\n\t\t{Base Unit of Measure} = {Base Unit of Measure},\n\t\t{Billing Quantity in Base Unit} = toDecimal(byName('Billing Quantity in Base Unit'))) ~> Mapping\nMapping sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tMANDT as string,\n\t\tKEYF0 as string,\n\t\tERDAT as date,\n\t\tMATNR as string,\n\t\tVTWEG as string,\n\t\tBUKRS as string,\n\t\tFKIMG as decimal(8,4),\n\t\tVRKME as string,\n\t\tUMVKZ as decimal(8,4),\n\t\tMEINS as string,\n\t\tARKTX as string,\n\t\tPRODH as string,\n\t\tMATKL as string,\n\t\tSPART as string,\n\t\tWERKS as string,\n\t\tEAN11 as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tdateFormat:'yyyy/MM/dd',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tgoods_date = {Actual goods issue date},\n\t\tdoc_cat = {Sales Document Category},\n\t\tmaterial = {0MATERIAL},\n\t\tdc = {Distribution Channel},\n\t\tdv = {0DIVISION},\n\t\tsales_org = {Sales Organization},\n\t\tcompany_code = {Company code},\n\t\tsales_office = {Sales Office},\n\t\tcal_day = {Calendar day},\n\t\tuom = {Base Unit of Measure},\n\t\tqty = {Billing Quantity in Base Unit},\n\t\tmat_text = MaterialText\n\t)) ~> AzureSQLServer\nMapping sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0066,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tagid = {Actual goods issue date},\n\t\tDocCategory = {Sales Document Category},\n\t\t{0MATERIAL},\n\t\tMaterialText,\n\t\tDC = {Distribution Channel},\n\t\t{0DIVISION},\n\t\tSalesOrg = {Sales Organization},\n\t\tCompany = {Company code},\n\t\tSalesOffice = {Sales Office},\n\t\tCalDay = {Calendar day},\n\t\tUOM = {Base Unit of Measure},\n\t\tQTY = {Billing Quantity in Base Unit}\n\t)) ~> toParquet"
+		}
+	}
+}

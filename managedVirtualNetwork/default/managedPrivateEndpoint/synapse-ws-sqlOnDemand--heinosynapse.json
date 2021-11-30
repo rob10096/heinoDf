@@ -1,0 +1,10 @@
+{
+	"name": "synapse-ws-sqlOnDemand--heinosynapse",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.Synapse/workspaces/heinosynapse",
+		"groupId": "sqlOnDemand",
+		"fqdns": [
+			"heinosynapse-ondemand.7ec79d58-522f-4123-8ac0-8cfcaecbbb4a.sql.azuresynapse.net"
+		]
+	}
+}

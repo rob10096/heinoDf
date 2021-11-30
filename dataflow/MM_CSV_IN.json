@@ -1,0 +1,32 @@
+{
+	"name": "MM_CSV_IN",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "MMDATAVENDOR",
+						"type": "DatasetReference"
+					},
+					"name": "MMCSVDATA"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"name": "mmtomssql"
+				}
+			],
+			"transformations": [
+				{
+					"name": "csvmapping"
+				}
+			],
+			"script": "source(output(\n\t\tMATNR as string,\n\t\tSPRAS as string,\n\t\tMAKTX as string,\n\t\tLIFNR as string,\n\t\tNAME1 as string,\n\t\tNAME2 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> MMCSVDATA\nMMCSVDATA derive(MATNR = MATNR) ~> csvmapping\ncsvmapping sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tMATNR as string,\n\t\tSPRAS as string,\n\t\tMAKTX as string,\n\t\tLIFNR as string,\n\t\tNAME1 as string,\n\t\tNAME2 as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tMATNR,\n\t\tSPRAS,\n\t\tMAKTX,\n\t\tLIFNR,\n\t\tNAME1,\n\t\tNAME2\n\t)) ~> mmtomssql"
+		}
+	}
+}

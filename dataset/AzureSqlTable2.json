@@ -1,0 +1,42 @@
+{
+	"name": "AzureSqlTable2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "MATNR",
+				"type": "nchar"
+			},
+			{
+				"name": "SPRAS",
+				"type": "varchar"
+			},
+			{
+				"name": "MAKTX",
+				"type": "varchar"
+			},
+			{
+				"name": "LIFNR",
+				"type": "nchar"
+			},
+			{
+				"name": "NAME1",
+				"type": "varchar"
+			},
+			{
+				"name": "NAME2",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "t_vendor_mat"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

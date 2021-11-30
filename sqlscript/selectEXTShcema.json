@@ -1,0 +1,17 @@
+{
+	"name": "selectEXTShcema",
+	"properties": {
+		"content": {
+			"query": "select top 10 *\nfrom openrowset(\n        bulk 'latest/ecdc_cases.csv',\n        data_source = 'covid',\n        format = 'csv',\n        parser_version ='2.0',\n        firstrow = 2\n    ) with (\n        date_rep date 1,\n        cases int 5,\n        year varchar(4) 4,\n        geo_id varchar(6) 8\n    ) as rows",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SapData",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

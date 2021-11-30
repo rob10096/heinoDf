@@ -1,0 +1,18 @@
+{
+	"name": "SQL_Select_All",
+	"properties": {
+		"description": "Select all from fles",
+		"content": {
+			"query": "SELECT\n    TOP 10000 *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.blob.core.windows.net/curated/',\n        FORMAT='PARQUET'\n    ) AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

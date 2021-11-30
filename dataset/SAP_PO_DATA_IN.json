@@ -1,0 +1,90 @@
+{
+	"name": "SAP_PO_DATA_IN",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "PO_2020_*.csv",
+				"fileSystem": "rawdata"
+			},
+			"columnDelimiter": ";",
+			"encodingName": "WINDOWS-1257",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "MANDT",
+				"type": "String"
+			},
+			{
+				"name": "KEYF0",
+				"type": "String"
+			},
+			{
+				"name": "ERDAT",
+				"type": "String"
+			},
+			{
+				"name": "MATNR",
+				"type": "String"
+			},
+			{
+				"name": "VTWEG",
+				"type": "String"
+			},
+			{
+				"name": "BUKRS",
+				"type": "String"
+			},
+			{
+				"name": "FKIMG",
+				"type": "String"
+			},
+			{
+				"name": "VRKME",
+				"type": "String"
+			},
+			{
+				"name": "UMVKZ",
+				"type": "String"
+			},
+			{
+				"name": "MEINS",
+				"type": "String"
+			},
+			{
+				"name": "ARKTX",
+				"type": "String"
+			},
+			{
+				"name": "PRODH",
+				"type": "String"
+			},
+			{
+				"name": "MATKL",
+				"type": "String"
+			},
+			{
+				"name": "SPART",
+				"type": "String"
+			},
+			{
+				"name": "WERKS",
+				"type": "String"
+			},
+			{
+				"name": "EAN11",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

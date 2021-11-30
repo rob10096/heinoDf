@@ -1,0 +1,50 @@
+{
+	"name": "MMDATAVENDOR",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Material_vendor2021.csv",
+				"fileSystem": "rawdata"
+			},
+			"columnDelimiter": ";",
+			"encodingName": "WINDOWS-1257",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "MATNR",
+				"type": "String"
+			},
+			{
+				"name": "SPRAS",
+				"type": "String"
+			},
+			{
+				"name": "MAKTX",
+				"type": "String"
+			},
+			{
+				"name": "LIFNR",
+				"type": "String"
+			},
+			{
+				"name": "NAME1",
+				"type": "String"
+			},
+			{
+				"name": "NAME2",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

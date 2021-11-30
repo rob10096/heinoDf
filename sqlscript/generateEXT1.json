@@ -1,0 +1,17 @@
+{
+	"name": "generateEXT1",
+	"properties": {
+		"content": {
+			"query": "create external data source covid\nwith ( location = 'https://pandemicdatalake.blob.core.windows.net/public/curated/covid-19/ecdc_cases' );",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SapData",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

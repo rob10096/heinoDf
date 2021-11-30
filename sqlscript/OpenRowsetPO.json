@@ -1,0 +1,18 @@
+{
+	"name": "OpenRowsetPO",
+	"properties": {
+		"description": "Read parquet",
+		"content": {
+			"query": "SELECT\n    TOP 100000 *\nFROM\n    OPENROWSET(\n            BULK '/curated/part-00000-70429374-9890-4bdd-86df-953a3314c48b-c000.snappy.parquet',\n            DATA_SOURCE = 'HeinoLake',\n            FORMAT='PARQUET'\n    ) AS [result]\n    where MEINS = 'KG'\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SapData",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

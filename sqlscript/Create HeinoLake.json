@@ -1,0 +1,17 @@
+{
+	"name": "Create HeinoLake",
+	"properties": {
+		"content": {
+			"query": "CREATE EXTERNAL DATA SOURCE HeinoLake\nWITH ( LOCATION = 'https://heinocloudstorage.blob.core.windows.net')",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SapData",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

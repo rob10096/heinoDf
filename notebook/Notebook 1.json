@@ -1,0 +1,75 @@
+{
+	"name": "Notebook 1",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "spark1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.Synapse/workspaces/heinosynapse/bigDataPools/spark1",
+				"name": "spark1",
+				"type": "Spark",
+				"endpoint": "https://heinosynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			}
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df = spark.sql(\"\"\"\r\n",
+					"   SELECT 0MATERIAL, MaterialText, agid,\r\n",
+					"       SUM(QTY) as SumQTY\r\n",
+					"   FROM sapdata1.sales01\r\n",
+					"   WHERE QTY > 0 \r\n",
+					"   GROUP BY agid, 0MATERIAL, MaterialText\r\n",
+					"   ORDER BY 0MATERIAL\r\n",
+					"\"\"\") \r\n",
+					"\r\n",
+					"df.write.saveAsTable(\"sapdata1.aggregated\")\r\n",
+					"\r\n",
+					"display(df)"
+				],
+				"attachments": null,
+				"execution_count": 1
+			}
+		]
+	}
+}

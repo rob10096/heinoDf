@@ -1,0 +1,18 @@
+{
+	"name": "PullDataFromMSSQL",
+	"properties": {
+		"description": "Pull PO data to a serverless SQL pool",
+		"content": {
+			"query": "SELECT\n    TOP 100000 *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.blob.core.windows.net/curated/part-00000-e6776e7b-4143-4b53-ad01-2dfe6111d24d-c000.snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

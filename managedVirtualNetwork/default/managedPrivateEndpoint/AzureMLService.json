@@ -1,0 +1,10 @@
+{
+	"name": "AzureMLService",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.MachineLearningServices/workspaces/HeinoAiWorkspace",
+		"groupId": "amlworkspace",
+		"fqdns": [
+			"ml-heinoaiwork-northeurope-c45d5501-203f-438b-a90b-292376a4b0e1.northeurope.notebooks.azure.net"
+		]
+	}
+}
