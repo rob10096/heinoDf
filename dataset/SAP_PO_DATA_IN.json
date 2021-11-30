@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "PO_2019_*.csv",
+				"fileName": "PO_2020_*.csv",
 				"fileSystem": "rawdata"
 			},
 			"columnDelimiter": ";",
