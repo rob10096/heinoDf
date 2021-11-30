@@ -1,0 +1,3319 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "heinosynapse"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"AzureDataLakeStorage1_servicePrincipalCredential": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalCredential' of 'AzureDataLakeStorage1'"
+		},
+		"AzureMySql1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureMySql1'"
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
+		},
+		"heinosynapse-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'heinosynapse-WorkspaceDefaultSqlServer'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://heinocloudstorage.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "05b53172-f487-4e0b-9576-2b1e68c80e5b"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "Heinosap"
+		},
+		"heinosynapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://heinocloudstorage.dfs.core.windows.net"
+		},
+		"us-decennial-census-zip_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'us-decennial-census-zip'"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL1000')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "az_to_mssql",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_to_MSSQL",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"CloudDataStore": {},
+									"AzureSQLServer": {},
+									"toParquet": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-09-01T05:37:25Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/DF_to_MSSQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-08-30T17:59:18Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/Dataflow1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SAP_Masterdata_MM')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Material-Vendor combination",
+				"activities": [
+					{
+						"name": "DF_Vendor_material",
+						"description": "Material-Vendor combination",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "MM_CSV_IN",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"MMCSVDATA": {},
+									"mmtomssql": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-11-01T18:12:49Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/MM_CSV_IN')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SAP_PO_DATA')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Data From SAP summarized by date/material/company/channel",
+				"activities": [
+					{
+						"name": "Read_PO_DATA",
+						"description": "Read new PO data files from SAP",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SAP_DATA_FLOW_PO",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcSapPoData": {},
+									"ToParquetFile": {},
+									"toSQLdb": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-10-06T11:17:40Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/SAP_DATA_FLOW_PO')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSqlPO1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MATNR",
+						"type": "nchar"
+					},
+					{
+						"name": "SPRAS",
+						"type": "varchar"
+					},
+					{
+						"name": "MAKTX",
+						"type": "varchar"
+					},
+					{
+						"name": "LIFNR",
+						"type": "nchar"
+					},
+					{
+						"name": "NAME1",
+						"type": "varchar"
+					},
+					{
+						"name": "NAME2",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "t_vendor_mat"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSqlTable1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MANDT",
+						"type": "varchar"
+					},
+					{
+						"name": "KEYF0",
+						"type": "varchar"
+					},
+					{
+						"name": "ERDAT",
+						"type": "date"
+					},
+					{
+						"name": "MATNR",
+						"type": "varchar"
+					},
+					{
+						"name": "VTWEG",
+						"type": "varchar"
+					},
+					{
+						"name": "BUKRS",
+						"type": "varchar"
+					},
+					{
+						"name": "FKIMG",
+						"type": "decimal",
+						"precision": 8,
+						"scale": 4
+					},
+					{
+						"name": "VRKME",
+						"type": "varchar"
+					},
+					{
+						"name": "UMVKZ",
+						"type": "decimal",
+						"precision": 8,
+						"scale": 4
+					},
+					{
+						"name": "MEINS",
+						"type": "varchar"
+					},
+					{
+						"name": "ARKTX",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODH",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MATKL",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SPART",
+						"type": "varchar"
+					},
+					{
+						"name": "WERKS",
+						"type": "varchar"
+					},
+					{
+						"name": "EAN11",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "t_sales"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSqlTable2')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MATNR",
+						"type": "nchar"
+					},
+					{
+						"name": "SPRAS",
+						"type": "varchar"
+					},
+					{
+						"name": "MAKTX",
+						"type": "varchar"
+					},
+					{
+						"name": "LIFNR",
+						"type": "nchar"
+					},
+					{
+						"name": "NAME1",
+						"type": "varchar"
+					},
+					{
+						"name": "NAME2",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "t_vendor_mat"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DelimitedText1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "2020_MAKT.csv",
+						"fileSystem": "sapdata1001"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "MANDT;MATNR;SPRAS;MAKTX;MAKTG",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DelimitedText2')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "curated"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MMDATATOPARQUET')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "curated"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "MANDT",
+						"type": "INT_16"
+					},
+					{
+						"name": "KEYF0",
+						"type": "UTF8"
+					},
+					{
+						"name": "ERDAT",
+						"type": "DATE"
+					},
+					{
+						"name": "MATNR",
+						"type": "UTF8"
+					},
+					{
+						"name": "VTWEG",
+						"type": "UTF8"
+					},
+					{
+						"name": "BUKRS",
+						"type": "UTF8"
+					},
+					{
+						"name": "FKIMG",
+						"type": "UTF8"
+					},
+					{
+						"name": "VRKME",
+						"type": "UTF8"
+					},
+					{
+						"name": "UMVKZ",
+						"type": "UTF8"
+					},
+					{
+						"name": "MEINS",
+						"type": "UTF8"
+					},
+					{
+						"name": "ARKTX",
+						"type": "UTF8"
+					},
+					{
+						"name": "PRODH",
+						"type": "UTF8"
+					},
+					{
+						"name": "MATKL",
+						"type": "INT32"
+					},
+					{
+						"name": "SPART",
+						"type": "UTF8"
+					},
+					{
+						"name": "WERKS",
+						"type": "UTF8"
+					},
+					{
+						"name": "EAN11",
+						"type": "INT64"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MMDATAVENDOR')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Material_vendor2021.csv",
+						"fileSystem": "rawdata"
+					},
+					"columnDelimiter": ";",
+					"encodingName": "WINDOWS-1257",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "MATNR",
+						"type": "String"
+					},
+					{
+						"name": "SPRAS",
+						"type": "String"
+					},
+					{
+						"name": "MAKTX",
+						"type": "String"
+					},
+					{
+						"name": "LIFNR",
+						"type": "String"
+					},
+					{
+						"name": "NAME1",
+						"type": "String"
+					},
+					{
+						"name": "NAME2",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PO_2021_01')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "curated"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PO_2021_02')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "PO_2021_01.csv",
+						"fileSystem": "rawdata"
+					},
+					"columnDelimiter": ";",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Actual goods issue date",
+						"type": "String"
+					},
+					{
+						"name": "Sales Document Category",
+						"type": "String"
+					},
+					{
+						"name": "0MATERIAL",
+						"type": "String"
+					},
+					{
+						"name": "MaterialText",
+						"type": "String"
+					},
+					{
+						"name": "Distribution Channel",
+						"type": "String"
+					},
+					{
+						"name": "0DIVISION",
+						"type": "String"
+					},
+					{
+						"name": "Sales Organization",
+						"type": "String"
+					},
+					{
+						"name": "Company code",
+						"type": "String"
+					},
+					{
+						"name": "Sales Office",
+						"type": "String"
+					},
+					{
+						"name": "Calendar day",
+						"type": "String"
+					},
+					{
+						"name": "Base Unit of Measure",
+						"type": "String"
+					},
+					{
+						"name": "Billing Quantity in Base Unit",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Parquet1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "curated"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SAP_PO_DATA_IN')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "PO_2021_*.csv",
+						"fileSystem": "rawdata"
+					},
+					"columnDelimiter": ";",
+					"encodingName": "WINDOWS-1257",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "MANDT",
+						"type": "String"
+					},
+					{
+						"name": "KEYF0",
+						"type": "String"
+					},
+					{
+						"name": "ERDAT",
+						"type": "String"
+					},
+					{
+						"name": "MATNR",
+						"type": "String"
+					},
+					{
+						"name": "VTWEG",
+						"type": "String"
+					},
+					{
+						"name": "BUKRS",
+						"type": "String"
+					},
+					{
+						"name": "FKIMG",
+						"type": "String"
+					},
+					{
+						"name": "VRKME",
+						"type": "String"
+					},
+					{
+						"name": "UMVKZ",
+						"type": "String"
+					},
+					{
+						"name": "MEINS",
+						"type": "String"
+					},
+					{
+						"name": "ARKTX",
+						"type": "String"
+					},
+					{
+						"name": "PRODH",
+						"type": "String"
+					},
+					{
+						"name": "MATKL",
+						"type": "String"
+					},
+					{
+						"name": "SPART",
+						"type": "String"
+					},
+					{
+						"name": "WERKS",
+						"type": "String"
+					},
+					{
+						"name": "EAN11",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SAP_PO_DATA_P')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "heinosynapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "curated"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "agid",
+						"type": "DATE"
+					},
+					{
+						"name": "DocCategory",
+						"type": "UTF8"
+					},
+					{
+						"name": "0MATERIAL",
+						"type": "UTF8"
+					},
+					{
+						"name": "MaterialText",
+						"type": "UTF8"
+					},
+					{
+						"name": "DC",
+						"type": "UTF8"
+					},
+					{
+						"name": "0DIVISION",
+						"type": "UTF8"
+					},
+					{
+						"name": "SalesOrg",
+						"type": "UTF8"
+					},
+					{
+						"name": "Company",
+						"type": "UTF8"
+					},
+					{
+						"name": "SalesOffice",
+						"type": "UTF8"
+					},
+					{
+						"name": "CalDay",
+						"type": "DATE"
+					},
+					{
+						"name": "UOM",
+						"type": "UTF8"
+					},
+					{
+						"name": "QTY",
+						"type": "DECIMAL",
+						"precision": 10,
+						"scale": 2
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/heinosynapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Heino Blobstorage",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
+					"tenant": "[parameters('AzureDataLakeStorage1_properties_typeProperties_tenant')]",
+					"servicePrincipalId": "[parameters('AzureDataLakeStorage1_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredentialType": "ServicePrincipalKey",
+					"servicePrincipalCredential": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_servicePrincipalCredential')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureMySql1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureMySql",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureMySql1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSqlDatabase1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabase1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/heinosynapse-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('heinosynapse-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/heinosynapse-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('heinosynapse-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/us-decennial-census-zip')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"sasUri": "[parameters('us-decennial-census-zip_sasUri')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				},
+				"managedVirtualNetwork": {
+					"type": "ManagedVirtualNetworkReference",
+					"referenceName": "default"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DF_to_MSSQL')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "PO_2021_02",
+								"type": "DatasetReference"
+							},
+							"name": "CloudDataStore"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference"
+							},
+							"name": "AzureSQLServer"
+						},
+						{
+							"dataset": {
+								"referenceName": "PO_2021_01",
+								"type": "DatasetReference"
+							},
+							"name": "toParquet"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Mapping"
+						}
+					],
+					"script": "source(output(\n\t\t{Actual goods issue date} as date 'MM/dd/yyyy',\n\t\t{Sales Document Category} as string,\n\t\t{0MATERIAL} as string,\n\t\tMaterialText as string,\n\t\t{Distribution Channel} as string,\n\t\t{0DIVISION} as string,\n\t\t{Sales Organization} as string,\n\t\t{Company code} as string,\n\t\t{Sales Office} as string,\n\t\t{Calendar day} as date 'MM/dd/yyyy',\n\t\t{Base Unit of Measure} as string,\n\t\t{Billing Quantity in Base Unit} as decimal(10,0) '0000,0000'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['PO_2021_*.csv']) ~> CloudDataStore\nCloudDataStore derive({Actual goods issue date} = toDate(byName('Actual goods issue date'), 'yyyy/MM/dd'),\n\t\t{Sales Document Category} = {Sales Document Category},\n\t\t{0MATERIAL} = {0MATERIAL},\n\t\tMaterialText = MaterialText,\n\t\t{Distribution Channel} = {Distribution Channel},\n\t\t{0DIVISION} = {0DIVISION},\n\t\t{Sales Organization} = {Sales Organization},\n\t\t{Company code} = {Company code},\n\t\t{Sales Office} = {Sales Office},\n\t\t{Calendar day} = toDate(byName('Calendar day'), 'yyyy/MM/dd'),\n\t\t{Base Unit of Measure} = {Base Unit of Measure},\n\t\t{Billing Quantity in Base Unit} = toDecimal(byName('Billing Quantity in Base Unit'))) ~> Mapping\nMapping sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tMANDT as string,\n\t\tKEYF0 as string,\n\t\tERDAT as date,\n\t\tMATNR as string,\n\t\tVTWEG as string,\n\t\tBUKRS as string,\n\t\tFKIMG as decimal(8,4),\n\t\tVRKME as string,\n\t\tUMVKZ as decimal(8,4),\n\t\tMEINS as string,\n\t\tARKTX as string,\n\t\tPRODH as string,\n\t\tMATKL as string,\n\t\tSPART as string,\n\t\tWERKS as string,\n\t\tEAN11 as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tdateFormat:'yyyy/MM/dd',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tgoods_date = {Actual goods issue date},\n\t\tdoc_cat = {Sales Document Category},\n\t\tmaterial = {0MATERIAL},\n\t\tdc = {Distribution Channel},\n\t\tdv = {0DIVISION},\n\t\tsales_org = {Sales Organization},\n\t\tcompany_code = {Company code},\n\t\tsales_office = {Sales Office},\n\t\tcal_day = {Calendar day},\n\t\tuom = {Base Unit of Measure},\n\t\tqty = {Billing Quantity in Base Unit},\n\t\tmat_text = MaterialText\n\t)) ~> AzureSQLServer\nMapping sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0066,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tagid = {Actual goods issue date},\n\t\tDocCategory = {Sales Document Category},\n\t\t{0MATERIAL},\n\t\tMaterialText,\n\t\tDC = {Distribution Channel},\n\t\t{0DIVISION},\n\t\tSalesOrg = {Sales Organization},\n\t\tCompany = {Company code},\n\t\tSalesOffice = {Sales Office},\n\t\tCalDay = {Calendar day},\n\t\tUOM = {Base Unit of Measure},\n\t\tQTY = {Billing Quantity in Base Unit}\n\t)) ~> toParquet"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/PO_2021_02')]",
+				"[concat(variables('workspaceId'), '/datasets/AzureSqlTable1')]",
+				"[concat(variables('workspaceId'), '/datasets/PO_2021_01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow1')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\t{MANDT;MATNR;SPRAS;MAKTX;MAKTG} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tumask: 0666,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/DelimitedText1')]",
+				"[concat(variables('workspaceId'), '/datasets/DelimitedText2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MM_CSV_IN')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "MMDATAVENDOR",
+								"type": "DatasetReference"
+							},
+							"name": "MMCSVDATA"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference"
+							},
+							"name": "mmtomssql"
+						}
+					],
+					"transformations": [
+						{
+							"name": "csvmapping"
+						}
+					],
+					"script": "source(output(\n\t\tMATNR as string,\n\t\tSPRAS as string,\n\t\tMAKTX as string,\n\t\tLIFNR as string,\n\t\tNAME1 as string,\n\t\tNAME2 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> MMCSVDATA\nMMCSVDATA derive(MATNR = MATNR) ~> csvmapping\ncsvmapping sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tMATNR as string,\n\t\tSPRAS as string,\n\t\tMAKTX as string,\n\t\tLIFNR as string,\n\t\tNAME1 as string,\n\t\tNAME2 as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tMATNR,\n\t\tSPRAS,\n\t\tMAKTX,\n\t\tLIFNR,\n\t\tNAME1,\n\t\tNAME2\n\t)) ~> mmtomssql"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/MMDATAVENDOR')]",
+				"[concat(variables('workspaceId'), '/datasets/AzureSqlTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SAP_DATA_FLOW_PO')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SAP_PO_DATA_IN",
+								"type": "DatasetReference"
+							},
+							"name": "srcSapPoData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Parquet1",
+								"type": "DatasetReference"
+							},
+							"name": "ToParquetFile"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference"
+							},
+							"name": "toSQLdb"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Mapping"
+						}
+					],
+					"script": "source(output(\n\t\tMANDT as short,\n\t\tKEYF0 as string,\n\t\tERDAT as date 'MM/dd/yyyy',\n\t\tMATNR as string,\n\t\tVTWEG as string,\n\t\tBUKRS as string,\n\t\tFKIMG as string,\n\t\tVRKME as string,\n\t\tUMVKZ as string,\n\t\tMEINS as string,\n\t\tARKTX as string,\n\t\tPRODH as string,\n\t\tMATKL as integer,\n\t\tSPART as string,\n\t\tWERKS as string,\n\t\tEAN11 as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['PO_2021_*.csv']) ~> srcSapPoData\nsrcSapPoData derive(FKIMG = replace(toString(byName('FKIMG')),',', '.')) ~> Mapping\nMapping sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tMANDT,\n\t\tKEYF0,\n\t\tERDAT,\n\t\tMATNR,\n\t\tVTWEG,\n\t\tBUKRS,\n\t\tFKIMG,\n\t\tVRKME,\n\t\tUMVKZ,\n\t\tMEINS,\n\t\tARKTX,\n\t\tPRODH,\n\t\tMATKL,\n\t\tSPART,\n\t\tWERKS,\n\t\tEAN11\n\t)) ~> ToParquetFile\nMapping sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tMANDT as string,\n\t\tKEYF0 as string,\n\t\tERDAT as date,\n\t\tMATNR as string,\n\t\tVTWEG as string,\n\t\tBUKRS as string,\n\t\tFKIMG as decimal(8,4),\n\t\tVRKME as string,\n\t\tUMVKZ as decimal(8,4),\n\t\tMEINS as string,\n\t\tARKTX as string,\n\t\tPRODH as string,\n\t\tMATKL as string,\n\t\tSPART as string,\n\t\tWERKS as string,\n\t\tEAN11 as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tdateFormat:'MM/dd/yyyy',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tMANDT,\n\t\tKEYF0,\n\t\tERDAT,\n\t\tFKIMG,\n\t\tVTWEG,\n\t\tBUKRS,\n\t\tFKIMG,\n\t\tVRKME,\n\t\tUMVKZ,\n\t\tMEINS,\n\t\tARKTX,\n\t\tPRODH,\n\t\tMATKL,\n\t\tSPART,\n\t\tWERKS,\n\t\tEAN11,\n\t\tMATNR\n\t)) ~> toSQLdb"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/SAP_PO_DATA_IN')]",
+				"[concat(variables('workspaceId'), '/datasets/Parquet1')]",
+				"[concat(variables('workspaceId'), '/datasets/AzureSqlTable1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Create HeinoLake')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE EXTERNAL DATA SOURCE HeinoLake\nWITH ( LOCATION = 'https://heinocloudstorage.blob.core.windows.net')",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SapData",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Create View')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE VIEW SalesTransactions\n\nAS SELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.blob.core.windows.net/curated/',\n        FORMAT='PARQUET'\n    ) AS [result]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SapData",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/OpenRowsetPO')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Read parquet",
+				"content": {
+					"query": "SELECT\n    TOP 100000 *\nFROM\n    OPENROWSET(\n            BULK '/curated/part-00000-70429374-9890-4bdd-86df-953a3314c48b-c000.snappy.parquet',\n            DATA_SOURCE = 'HeinoLake',\n            FORMAT='PARQUET'\n    ) AS [result]\n    where MEINS = 'KG'\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SapData",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PullDataFromMSSQL')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Pull PO data to a serverless SQL pool",
+				"content": {
+					"query": "SELECT\n    TOP 100000 *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.blob.core.windows.net/curated/part-00000-e6776e7b-4143-4b53-ad01-2dfe6111d24d-c000.snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE DATABASE DataExplorationDB \n                COLLATE Latin1_General_100_BIN2_UTF8",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT\n    YEAR(tpepPickupDateTime) AS current_year,\n    COUNT(*) AS rides_per_year\nFROM\n    OPENROWSET(\n        BULK 'https://azureopendatastorage.blob.core.windows.net/nyctlc/yellow/puYear=*/puMonth=*/*.parquet',\n        FORMAT='PARQUET'\n    ) AS [nyc]\nWHERE nyc.filepath(1) >= '2009' AND nyc.filepath(1) <= '2019'\nGROUP BY YEAR(tpepPickupDateTime)\nORDER BY 1 ASC",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 3')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n TOP 100 *\nFROM\nOPENROWSET(\nBULK 'https://heinocloudstorage.dfs.core.windows.net/rawdata/PO_2021_02.csv',\nFORMAT = 'CSV',\nparser_version = '2.0',\n        firstrow = 1\n) with (\n        gi_dte date,\n        Division varchar(4)\n    ) as rows",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 4')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.dfs.core.windows.net/rawdata/PO_2021_02.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 5')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "sapdata1",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL_Select_All')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Select all from fles",
+				"content": {
+					"query": "SELECT\n    TOP 10000 *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.blob.core.windows.net/curated/',\n        FORMAT='PARQUET'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SelectEXT1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "select top 10 *\nfrom openrowset(\n        bulk 'latest/ecdc_cases.csv',\n        data_source = 'covid',\n        format = 'csv',\n        parser_version ='2.0',\n        firstrow = 2\n    ) as rows",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SapData",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/generateEXT1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "create external data source covid\nwith ( location = 'https://pandemicdatalake.blob.core.windows.net/public/curated/covid-19/ecdc_cases' );",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SapData",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/read kna1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://heinocloudstorage.dfs.core.windows.net/sapdata1001/2020_kna1.csv',\n    format = 'csv',\n    parser_version = '2.0',\n    firstrow = 2 ) as rows",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/selectEXTShcema')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "select top 10 *\nfrom openrowset(\n        bulk 'latest/ecdc_cases.csv',\n        data_source = 'covid',\n        format = 'csv',\n        parser_version ='2.0',\n        firstrow = 2\n    ) with (\n        date_rep date 1,\n        cases int 5,\n        year varchar(4) 4,\n        geo_id varchar(6) 8\n    ) as rows",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SapData",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Analyze PO Data')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "spark1",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.Synapse/workspaces/heinosynapse/bigDataPools/spark1",
+						"name": "spark1",
+						"type": "Spark",
+						"endpoint": "https://heinosynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"extraHeader": null
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df = spark.sql(\"\"\"\r\n",
+							"   SELECT 0MATERIAL, MaterialText, agid,\r\n",
+							"       SUM(QTY) as SumQTY\r\n",
+							"   FROM sapdata1.sales01\r\n",
+							"   WHERE QTY > 0 \r\n",
+							"   GROUP BY agid, 0MATERIAL, MaterialText\r\n",
+							"   ORDER BY 0MATERIAL\r\n",
+							"\"\"\") \r\n",
+							"\r\n",
+							"df.write.saveAsTable(\"sapdata1.aggregated\")\r\n",
+							"\r\n",
+							"display(df)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 1
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SparkSAPPO1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "spark1",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1",
+						"state": {
+							"b63c5723-5f41-4868-beb3-edc4171d43c1": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008038835",
+												"3": "VALMIX J��VUORI-PUNASIKURI -FRISEE 2.5KG",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008053493",
+												"3": "RUMMO 3KG SPAGHETTI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008072854",
+												"3": "GREENEST 200G RUCOLA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "28.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008051396",
+												"3": "IGLU 2.5KG SIPULIKUUTIO 6X6MM PL PAKASTE",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008072830",
+												"3": "GREENEST 1KG PORKKANARAASTE 1.6MM",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "5.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001819",
+												"3": "KORIANTERI 100G PUNTTI ISRAEL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "10.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001812",
+												"3": "MINTTU 100G PUNTTI ISRAEL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "9.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008016113",
+												"3": "CASTELLI PARMESAN REGGIANO 1KG LASTU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001801",
+												"3": "PERSILJA 100G SUOMI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "9.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001800",
+												"3": "TILLI 100 G SUOMI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "17.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008000301",
+												"3": "PUNASIPULI 10KG S�KKI EGYPTI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "3.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008057995",
+												"3": "SM 430G JUUSTOKUMINA JAUHETTU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008039774",
+												"3": "ARLA RUOKA 15% 1L LAKTON KASVIRASV UHT",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "12.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008072892",
+												"3": "GREENEST 1KG FAMILY MIX",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "10.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008020173",
+												"3": "ARLA KEVYTMAITOJUOMA 1L LAKTON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "68.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008044544",
+												"3": "RAPSONA 5KG REAL MAJONEESI 80%",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008070430",
+												"3": "JALOTOFU 1.08KG LUOMU MAUSTAMATON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "3.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009902331",
+												"3": "ARLA 5KG MAITORAHKA LAKTOOSITON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009902322",
+												"3": "ARLA 2.5KG RAEJUUSTO LAKTOOSITON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "11.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008028573",
+												"3": "MS 2KG SUOLAP�HKIN�",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000033670",
+												"3": "SM SWEET HOT CHILI SAUCE 2.379KG",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "3.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008057593",
+												"3": "AIMO 10L SEKAMEHUTIIVISTE 1+3 60%",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001823",
+												"3": "ITU MUNG 1KG/PSS SUOMI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008068606",
+												"3": "VALIO ODDLYG BARISTA KAURAJU 1L GLUTON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "10.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001822",
+												"3": "RUOHOSIPULI 100G PUNTTI ISRAEL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "9.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008046401",
+												"3": "ARLA TUOREJUUSTO 1.5KG MAUSTAMTON LAKTON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008037479",
+												"3": "AIMO KEVYTMAJONEESI 35% 5KG",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000246124",
+												"3": "KEIJU CATERING 400G KASVIRASVAL 70%",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "27.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008016563",
+												"3": "PALIRRIA 2KG J�TTIPAPU TOMAATTIKASTIK",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008000316",
+												"3": "FAZER 1KG LAIVURIN VAALEAT VIIPALEET PAK",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "13.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000017665",
+												"3": "ALPRO 1L KALSIUM SOIJAJUOMA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008010575",
+												"3": "VALMIX WOK-PANNUSEKOITUS 5X30MM 1KG",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000003406",
+												"3": "RYP�LE TUMMA SMT�N 500G",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009910155",
+												"3": "RYP�LE VIHRE� SMT�N 500G",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "12.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009066861",
+												"3": "BEAUFOR 5L PUNAVIINIETIKKA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "5.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008063489",
+												"3": "MAISSI 2.5KG PL PAKASTE",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "10.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008054721",
+												"3": "RYDBERGS 5KG VEGAANIMAJONEESI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "3.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008014712",
+												"3": "VALIO ARKIJOGURTTI 1KG MARJAMIX",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008053549",
+												"3": "RUMMO 3KG PENNE RIGATE",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "14.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001743",
+												"3": "PINAATTI MINI 100G RASIA ITALIA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008056026",
+												"3": "J�TES�KKI 10KPL/150L 0.05 MUSTA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "33.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000370668",
+												"3": "BIOSKA 5KPL/150L BIOJ�TES�KKI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "24.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000000001",
+												"3": "PULLOPANTTI 0.33/0.35/0.5/0.75L LASIPULL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "108.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008051385",
+												"3": "CALLEBAUT 2.5KG BELG VALKOSUKLAA NAPPI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009154774",
+												"3": "MAALARINTEIPPI EUROC 25MMX50M",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "5.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008054450",
+												"3": "MAIRE T�YSMAITOJUOMA 1L LAKTOOSITON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "52.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008019966",
+												"3": "ARLA 1.8KG TURKKILAIN JOGURTT 10% LAKTON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000346460",
+												"3": "MIMIS RUCOLA VERSO 30G/RAS",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000002221",
+												"3": "PERUNA PUIKULA K�SINKUOR 5KG",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000002939",
+												"3": "J�RVIKYL� BASILIKARUUKKU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000002506",
+												"3": "NAURIS NIPPU SUOMI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "11.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008054479",
+												"3": "ARLA T�YSMAITO 1L SUOMI ESL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "31.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008056689",
+												"3": "SALAATTI GEM 250G SUOMI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "24.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008064104",
+												"3": "OCEAN SPRAY 1L KARPALOMEHU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "18.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001512",
+												"3": "VALKOSIPULI KUORITTU 1KG KIINA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "12.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008039307",
+												"3": "AIMO GOUDA 1KG VIIPALE 66KPLX15G LAKTON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001893",
+												"3": "LEHTIPERSILJA 100G PUNTTI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "17.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008074153",
+												"3": "VALCOM 1L KOOKOSMAITO",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "36.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000866541",
+												"3": "KOLMEN KONSTIN 500G PERUNAJAUHO",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008063906",
+												"3": "MILDOLA 10L RYPSI�LJY",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008000345",
+												"3": "SIPULI 5KG KUORITTU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "3.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000002534",
+												"3": "PORKKANA 3KG PESTY PSS",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "5.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008054679",
+												"3": "VALIO SUURTALOUS KUOHUKERMA 1.75L 35% LT",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "12.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008064471",
+												"3": "KEIJU CATERING 1KG MARGARIINI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008039018",
+												"3": "LAITILAN PROEGG 1KG KOKOMUNAMASSA LL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "8.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000116301",
+												"3": "TUORE HIIVA 1KG LEIVINHIIVA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "0.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008064039",
+												"3": "OMENAKUUTIOT 2.5KG 10X10 PAKASTE PUOLA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008037478",
+												"3": "AIMO T�YSMAJONEESI 78% 5KG",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001848",
+												"3": "HERNEENVERSO 500G/PSS SUOMI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008001236",
+												"3": "PUNASIPULI 2KG KUORITTU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008009626",
+												"3": "ARLA RUOKAKERMA 15% 1L LAKTON UHT",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "28.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008041593",
+												"3": "AIMO FETA 1.5/1KG SUOLALIEMESS� VL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "11.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001837",
+												"3": "THAIBASILIKA 100G PNT ISRAEL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000002106",
+												"3": "PW PERUNA 15KG PESTY 50-60MM",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008064444",
+												"3": "ARCO 500G SPAGHETTI PASTA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000003114",
+												"3": "SITRUUNA 1KG PSS ETEL�-AFRIKKA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "5.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001811",
+												"3": "TIMJAMI 100G PUNTTI ISRAEL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "7.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009377706",
+												"3": "SCOTTI 1KG RISOTTORIISI CARNAROLI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "10.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009903235",
+												"3": "MS 800G PINJANSIEMEN",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008064185",
+												"3": "AITO 1L UHT VISPAUTUVA 28% KAURAV GLUTON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008023551",
+												"3": "ARLA CAFEMAITO 1L LAKTON UHT",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "36.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008057956",
+												"3": "SM 470G KANELI JAUHETTU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000581488",
+												"3": "HAPPY DAY 1L ANANAST�YSMEHU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008072858",
+												"3": "JALOTOFU KYLM�SAVU GLUTEENITON 1150G",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009426644",
+												"3": "ROYAL 4.2/2.6KG PAPRIKA PUN PAAHD",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008039218",
+												"3": "ARLA PRO CHEDDARVIIPALE 1KG LAKTON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008074317",
+												"3": "MYRTTISEN KURKUT 8200G MAUSTEKURKKU",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008020793",
+												"3": "MILLAC RUOKA 15% 1L LAKTON UHT KASVIRA",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "12.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008048110",
+												"3": "ARLA KUOHUKERMA 35% 1L LAKTOOSITON ESL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "19.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000000002",
+												"3": "PULLOPANTTI 1L JA YLI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "12.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000001810",
+												"3": "RAKUUNA 100G PUNTTI ISRAEL",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "20.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008038229",
+												"3": "AIMO 2.5KG PUNAJUURISALAATTI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008042541",
+												"3": "AIMO 2.5KG METS�SIENISALAATTI",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008050736",
+												"3": "DELIBON KOOKOSKERMA 1L",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008053907",
+												"3": "TROPIC 1L APPELSIINIT�YSMEHU 100%",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "30.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000584813",
+												"3": "SEMPER 110G PIRUETT VAD T�YTEKEKSI GTON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "1.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000137836",
+												"3": "ELOVENA 1KG KAURAHIUTALE",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "6.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000009903326",
+												"3": "MS 800G CASHEWP�HKIN�",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "4.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000000343293",
+												"3": "YOSA KAURAV�LIPALA 2X125G MAN-BAN",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "2.00"
+											},
+											{
+												"0": "2021-08-02",
+												"1": "M",
+												"2": "000000000008046489",
+												"3": "ARLA RAEJUUSTO 400G LAKTOOSITON",
+												"4": "TT",
+												"5": "H1",
+												"6": "TT",
+												"7": "HETU",
+												"8": "HT",
+												"9": "2021-08-02",
+												"10": "ST",
+												"11": "11.00"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "agid",
+												"type": "date"
+											},
+											{
+												"key": "1",
+												"name": "DocCategory",
+												"type": "string"
+											},
+											{
+												"key": "2",
+												"name": "0MATERIAL",
+												"type": "string"
+											},
+											{
+												"key": "3",
+												"name": "MaterialText",
+												"type": "string"
+											},
+											{
+												"key": "4",
+												"name": "DC",
+												"type": "string"
+											},
+											{
+												"key": "5",
+												"name": "0DIVISION",
+												"type": "string"
+											},
+											{
+												"key": "6",
+												"name": "SalesOrg",
+												"type": "string"
+											},
+											{
+												"key": "7",
+												"name": "Company",
+												"type": "string"
+											},
+											{
+												"key": "8",
+												"name": "SalesOffice",
+												"type": "string"
+											},
+											{
+												"key": "9",
+												"name": "CalDay",
+												"type": "date"
+											},
+											{
+												"key": "10",
+												"name": "UOM",
+												"type": "string"
+											},
+											{
+												"key": "11",
+												"name": "QTY",
+												"type": "decimal"
+											}
+										]
+									},
+									"isSummary": false,
+									"language": "scala"
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"11"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							}
+						}
+					},
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.Synapse/workspaces/heinosynapse/bigDataPools/spark1",
+						"name": "spark1",
+						"type": "Spark",
+						"endpoint": "https://heinosynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"extraHeader": null
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://curated@heinocloudstorage.dfs.core.windows.net/part-00000-e6776e7b-4143-4b53-ad01-2dfe6111d24d-c000.snappy.parquet', format='parquet')\r\n",
+							"display(df.limit(100))\r\n",
+							"\r\n",
+							"df.printSchema()\r\n",
+							"\r\n",
+							"spark.sql(\"CREATE DATABASE IF NOT EXISTS SapData1\")\r\n",
+							"df.write.mode(\"overwrite\").saveAsTable(\"SapData1.sales01\")\r\n",
+							"\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 44
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/default')]",
+			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/default/AzureDataLakeStorage1')]",
+			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"privateLinkResourceId": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.Storage/storageAccounts/heinocloudstorage",
+				"groupId": "dfs",
+				"fqdns": [
+					"heinocloudstorage.dfs.core.windows.net"
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/default/AzureMLService')]",
+			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"privateLinkResourceId": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.MachineLearningServices/workspaces/HeinoAiWorkspace",
+				"groupId": "amlworkspace",
+				"fqdns": [
+					"ml-heinoaiwork-northeurope-c45d5501-203f-438b-a90b-292376a4b0e1.northeurope.notebooks.azure.net"
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/default/synapse-ws-sql--heinosynapse')]",
+			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"privateLinkResourceId": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.Synapse/workspaces/heinosynapse",
+				"groupId": "sql",
+				"fqdns": [
+					"heinosynapse.7ec79d58-522f-4123-8ac0-8cfcaecbbb4a.sql.azuresynapse.net"
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/default/synapse-ws-sqlOnDemand--heinosynapse')]",
+			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"privateLinkResourceId": "/subscriptions/4f6427bf-87a5-440b-8e51-27de76e7b15d/resourceGroups/AUTOMLSAPPOC/providers/Microsoft.Synapse/workspaces/heinosynapse",
+				"groupId": "sqlOnDemand",
+				"fqdns": [
+					"heinosynapse-ondemand.7ec79d58-522f-4123-8ac0-8cfcaecbbb4a.sql.azuresynapse.net"
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		}
+	]
+}
